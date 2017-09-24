@@ -23,6 +23,7 @@ struct rw_semaphore;
 #include <linux/rwsem-spinlock.h> /* use a generic implementation */
 #else
 /* All arch specific implementations share the same struct */
+/* 读写信号量结构体 */
 struct rw_semaphore {
 	long			count;
 	spinlock_t		wait_lock;
@@ -60,12 +61,14 @@ static inline int rwsem_is_locked(struct rw_semaphore *sem)
 	{ RWSEM_UNLOCKED_VALUE, __SPIN_LOCK_UNLOCKED(name.wait_lock),	\
 	  LIST_HEAD_INIT((name).wait_list) __RWSEM_DEP_MAP_INIT(name) }
 
+/* 创建静态声明的读写信号量 */
 #define DECLARE_RWSEM(name) \
 	struct rw_semaphore name = __RWSEM_INITIALIZER(name)
 
 extern void __init_rwsem(struct rw_semaphore *sem, const char *name,
 			 struct lock_class_key *key);
 
+/* 动态的创建读写信号量 */
 #define init_rwsem(sem)						\
 do {								\
 	static struct lock_class_key __key;			\

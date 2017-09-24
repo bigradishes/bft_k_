@@ -67,20 +67,20 @@ static ATUnsolHandler   s_unsolHandler;
 /*add by renyimin for 8 channels to 1 channel 2015 9 21 */
 static pthread_mutex_t s_ttyFDMutex = PTHREAD_MUTEX_INITIALIZER;
 
-/* Í¨µÀ */
+/* é€šé“ */
 struct channel_struct
 {
     int id;
     int ttyFd;
-    pthread_mutex_t s_commandmutex; //used to assure just one AT cmd is processing  /* ÃüÁî»¥³â */
-    pthread_cond_t  s_commandcond;  /* ÃüÁîÌõ¼şÊı */
+    pthread_mutex_t s_commandmutex; //used to assure just one AT cmd is processing  /* å‘½ä»¤äº’æ–¥ */
+    pthread_cond_t  s_commandcond;  /* å‘½ä»¤æ¡ä»¶æ•° */
     ATCommandType   s_type;
-    const char  *s_responsePrefix;  /* ÏìÓ¦Ç°×º */
-    const char  *s_smsPDU; /* ¶ÌĞÅ */
-    ATResponse  *sp_response; /* ÏìÓ¦ */
-    char    ATBuffer[MAX_AT_RESPONSE + 1];  /* buf×î´óµÄatÏìÓ¦ */
+    const char  *s_responsePrefix;  /* å“åº”å‰ç¼€ */
+    const char  *s_smsPDU; /* çŸ­ä¿¡ */
+    ATResponse  *sp_response; /* å“åº” */
+    char    ATBuffer[MAX_AT_RESPONSE + 1];  /* bufæœ€å¤§çš„atå“åº” */
     char    *ATBufferCur; /* buf_cur???????? */
-    int timeout_count;  /* ³¬Ê±¼ÆÊı */
+    int timeout_count;  /* è¶…æ—¶è®¡æ•° */
 };
 
 #define STANDBYMODE_PROPERTY  "persist.radio.standbymode"
@@ -150,7 +150,7 @@ void init_all_channel_struct()
 	MYLOG("\COMMAND_CHANNEL_NUMBER =  %d \r\n",COMMAND_CHANNEL_NUMBER);
     for (i = 0; i < COMMAND_CHANNEL_NUMBER; i++)
     {
-    	/* ³õÊ¼»¯Í¨µÀ½á¹¹Ìå£¬Ò²¾ÍÊÇÉÏÃæ·ÖÅäµÄchannels */
+    	/* åˆå§‹åŒ–é€šé“ç»“æ„ä½“ï¼Œä¹Ÿå°±æ˜¯ä¸Šé¢åˆ†é…çš„channels */
         init_channel_struct(&channels[i]);
     }
 }
@@ -504,13 +504,13 @@ static void processLine(struct channel_struct *chan, const char *line)
     if (chan->sp_response == NULL || strStartsWith(line, "NO CARRIER"))
     {
         MYLOG("\t No command pending, it's unsolicited message");/* no command pending */
-    	handleUnsolicited(chan, line);  /* ´¦ÀíÖ÷¶¯Ìá¹©µÄ */
+    	handleUnsolicited(chan, line);  /* å¤„ç†ä¸»åŠ¨æä¾›çš„ */
     }
     else if (isFinalResponseSuccess(line))
     {
     	MYLOG("\t It's  final response end ok");
         chan->sp_response->success = 1;
-        handleFinalResponse(chan, line);  /* ´¦Àí×îºóµÄÏìÓ¦ */
+        handleFinalResponse(chan, line);  /* å¤„ç†æœ€åçš„å“åº” */
     }
     else if (isFinalResponseError(line))
     {
@@ -640,7 +640,7 @@ static const char * get_at_buffer_line(struct channel_struct *chan)
     // skip over leading newlines
     while (*chan->ATBufferCur == '\r' || *chan->ATBufferCur == '\n')
     {
-        chan->ATBufferCur++;  /* Ö±µ½¿ªÍ·²»ÊÇ»Ø³µ»òÕß»»ĞĞ */
+        chan->ATBufferCur++;  /* ç›´åˆ°å¼€å¤´ä¸æ˜¯å›è½¦æˆ–è€…æ¢è¡Œ */
     }
     p_eol = findNextEOL(chan->ATBufferCur);
 

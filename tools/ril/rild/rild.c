@@ -15,7 +15,7 @@
 ** limitations under the License.
 */
 
-/* ÓÃÓÚÉú³ÉrildµÄ¿ÉÖ´ĞĞÎÄ¼ş */
+/* ç”¨äºç”Ÿæˆrildçš„å¯æ‰§è¡Œæ–‡ä»¶ */
 
 #include <stdio.h> 
 #include <stdlib.h>
@@ -75,8 +75,8 @@ extern void RIL_requestTimedCallback (RIL_TimedCallback callback,
                                void *param, const struct timeval *relativeTime);
 
 
-/* ÕâÀïÃæµÄÈı¸öº¯ÊıÊÇÔÚril.cppÀïÃæÊµÏÖ£¬ËùÒÔÉÏÃæÓÃexternÉùÃ÷ £¬
- * Õâ¸öÈ«¾Ö±äÁ¿»á´«¸øril_initº¯Êı£¬¹©ÏÂ²ãµ÷ÓÃ
+/* è¿™é‡Œé¢çš„ä¸‰ä¸ªå‡½æ•°æ˜¯åœ¨ril.cppé‡Œé¢å®ç°ï¼Œæ‰€ä»¥ä¸Šé¢ç”¨externå£°æ˜ ï¼Œ
+ * è¿™ä¸ªå…¨å±€å˜é‡ä¼šä¼ ç»™ril_initå‡½æ•°ï¼Œä¾›ä¸‹å±‚è°ƒç”¨
  */
 static struct RIL_Env s_rilEnv = {
     RIL_onRequestComplete,
@@ -105,11 +105,11 @@ static int make_argv(char * args, char ** argv)
  * switchUser - Switches UID to radio, preserving CAP_NET_ADMIN capabilities.
  * Our group, cache, was set by init.
  */
-/* ÇĞ»»ÓÃ»§ */
+/* åˆ‡æ¢ç”¨æˆ· */
 void switchUser() {
-/* Õâ¸öÏµÍ³µ÷ÓÃÖ¸ÁîÊÇÎª½ø³ÌÖÆ¶¨¶øÉè¼ÆµÄ,ËüÒªÇóÏµÍ³ÈÃËü±£³ÖÆä¹¦ÄÜ */
+/* è¿™ä¸ªç³»ç»Ÿè°ƒç”¨æŒ‡ä»¤æ˜¯ä¸ºè¿›ç¨‹åˆ¶å®šè€Œè®¾è®¡çš„,å®ƒè¦æ±‚ç³»ç»Ÿè®©å®ƒä¿æŒå…¶åŠŸèƒ½ */
     prctl(PR_SET_KEEPCAPS, 1, 0, 0, 0);
-/* ÉèÖÃÊµ¼ÊÓÃ»§IDºÍÓĞĞ§ÓÃ»§ID */
+/* è®¾ç½®å®é™…ç”¨æˆ·IDå’Œæœ‰æ•ˆç”¨æˆ·ID */
     setuid(AID_RADIO);
 
     struct __user_cap_header_struct header;
@@ -118,7 +118,7 @@ void switchUser() {
     header.pid = 0;
     cap.effective = cap.permitted = (1 << CAP_NET_ADMIN) | (1 << CAP_NET_RAW);
     cap.inheritable = 0;
-	/* ÉèÖÃ½ø³ÌÈ¨ÏŞ */
+	/* è®¾ç½®è¿›ç¨‹æƒé™ */
     capset(&header, &cap);
 }
 
@@ -137,14 +137,14 @@ int main(int argc, char **argv)
 
     int i;
 
-	//ÉèÖÃÎÄ¼şÃ»ÓĞÄÄĞ©È¨ÏŞ 
+	//è®¾ç½®æ–‡ä»¶æ²¡æœ‰å“ªäº›æƒé™ 
     umask(S_IRGRP | S_IWGRP | S_IXGRP | S_IROTH | S_IWOTH | S_IXOTH);
 	
     for (i = 1; i < argc ;) {
 	ALOGD("Rild main argv[%d]: %s", i,argv[i]);
-		/* ifÅĞ¶Ï´«Èë²ÎÊıÊÇ·ñÕıÈ·£¬È»ºó°Ñ¿âµÄÂ·¾¶¸³Öµ */
+		/* ifåˆ¤æ–­ä¼ å…¥å‚æ•°æ˜¯å¦æ­£ç¡®ï¼Œç„¶åæŠŠåº“çš„è·¯å¾„èµ‹å€¼ */
         if (0 == strcmp(argv[i], "-l") && (argc - i > 1)) {
-			//µÃµ½¿âµÄÂ·¾¶
+			//å¾—åˆ°åº“çš„è·¯å¾„
             rilLibPath = argv[i + 1];
             i += 2;
         } else if (0 == strcmp(argv[i], "--")) {
@@ -152,14 +152,14 @@ int main(int argc, char **argv)
             hasLibArgs = 1;
             break;
         } else {
-        	//´òÓ¡
+        	//æ‰“å°
             usage(argv[0]);
         }
     }
 
 	/**
-	 * property_set£º³É¹¦·µ»Ø0£¬<0Ê§°Ü
-	 * property_get£º·µ»Ø¸ÃÖµµÄ³¤¶È,Èç¹ûÊôĞÔ¶ÁÈ¡Ê§°Ü»ò·µ»ØÒ»¸ö¿ÕÖµ
+	 * property_setï¼šæˆåŠŸè¿”å›0ï¼Œ<0å¤±è´¥
+	 * property_getï¼šè¿”å›è¯¥å€¼çš„é•¿åº¦,å¦‚æœå±æ€§è¯»å–å¤±è´¥æˆ–è¿”å›ä¸€ä¸ªç©ºå€¼
 	 */
     if (rilLibPath == NULL) {
         if ( 0 == property_get(LIB_PATH_PROPERTY, libPath, NULL)) {
@@ -167,7 +167,7 @@ int main(int argc, char **argv)
             // Assume "no-ril" case.
             goto done;
         } else {
-        	/* ifÄÚ¶ÁÈ¡µ½ÊôĞÔ£¬µ½ÕâÀï¸³Öµ */
+        	/* ifå†…è¯»å–åˆ°å±æ€§ï¼Œåˆ°è¿™é‡Œèµ‹å€¼ */
             rilLibPath = libPath;
         }
     }
@@ -185,7 +185,7 @@ int main(int argc, char **argv)
         /* first, read /proc/cmdline into memory */
         char          buffer[1024], *p, *q;
         int           len;
-						//¶Á´«µİ¸øÄÚºËµÄ²ÎÊı
+						//è¯»ä¼ é€’ç»™å†…æ ¸çš„å‚æ•°
         int           fd = open("/proc/cmdline",O_RDONLY);
 
         if (fd < 0) {
@@ -209,14 +209,14 @@ int main(int argc, char **argv)
             /* the qemud daemon is launched after rild, so
             * give it some time to create its GSM socket
             */
-            /* qemudÊØ»¤½ø³ÌÊÇÔÚrildÖ®ºóÆô¶¯µÄ 
-             * ¸øËüÒ»Ğ©Ê±¼äÀ´´´½¨ËüµÄGSM socket
+            /* qemudå®ˆæŠ¤è¿›ç¨‹æ˜¯åœ¨rildä¹‹åå¯åŠ¨çš„ 
+             * ç»™å®ƒä¸€äº›æ—¶é—´æ¥åˆ›å»ºå®ƒçš„GSM socket
              */
             int  tries = 5;
 #define  QEMUD_SOCKET_NAME    "qemud"
 
             while (1) {
-				/* Ê²Ã´×÷ÓÃ? Ã»¿´¶® */
+				/* ä»€ä¹ˆä½œç”¨? æ²¡çœ‹æ‡‚ */
                 int  fd;
 
                 //sleep(1);   //zxj del for enter pin display delay
@@ -252,8 +252,8 @@ int main(int argc, char **argv)
         }
 
         /* otherwise, try to see if we passed a device name from the kernel */
-		/* ÉÏÃæµÄifÃ»ÓĞÖ´ĞĞ³É¹¦£¬¾ÍÖ´ĞĞÏÂÃæµÄÕâ¸öif
-		 * ´ó¸ÅÀí½âÊÇ´Ó´«ÈëÄÚºË²ÎÊıÀï»ñÈ¡¿âµÄÂ·¾¶
+		/* ä¸Šé¢çš„ifæ²¡æœ‰æ‰§è¡ŒæˆåŠŸï¼Œå°±æ‰§è¡Œä¸‹é¢çš„è¿™ä¸ªif
+		 * å¤§æ¦‚ç†è§£æ˜¯ä»ä¼ å…¥å†…æ ¸å‚æ•°é‡Œè·å–åº“çš„è·¯å¾„
 		 */
         if (!done) do {
 #define  KERNEL_OPTION  "android.ril="
@@ -288,7 +288,7 @@ int main(int argc, char **argv)
     }
 OpenLib:
 #endif
-	/* ÉèÖÃÈ¨ÏŞ£¬ÇĞ»»ÓÃ»§ */
+	/* è®¾ç½®æƒé™ï¼Œåˆ‡æ¢ç”¨æˆ· */
     switchUser();
     system("busybox killall -9 pppd");
 	{ 
@@ -337,7 +337,7 @@ OpenLib:
 
 	ALOGD("loading %s \n",rilLibPath);
 
-	//´ò¿ªÒ»¸ö¶¯Ì¬Á´½Ó¿â,²¢·µ»Ø¶¯Ì¬Á´½Ó¿âµÄ¾ä±ú "/system/lib/libril-v7r1.so"
+	//æ‰“å¼€ä¸€ä¸ªåŠ¨æ€é“¾æ¥åº“,å¹¶è¿”å›åŠ¨æ€é“¾æ¥åº“çš„å¥æŸ„ "/system/lib/libril-v7r1.so"
     dlHandle = dlopen(rilLibPath, RTLD_NOW);
 
     if (dlHandle == NULL) {
@@ -345,7 +345,7 @@ OpenLib:
         exit(-1);
     }
 
-	//Õâ¾Í¿ªÊ¼ÁË 1.0
+	//è¿™å°±å¼€å§‹äº† 1.0
     RIL_startEventLoop();
 
     rilInit = (const RIL_RadioFunctions *(*)(const struct RIL_Env *, int, char **))dlsym(dlHandle, "RIL_Init");
@@ -369,11 +369,11 @@ OpenLib:
     // Make sure there's a reasonable argv[0]
     rilArgv[0] = argv[0];
     //ALOGD("Rild main rilArgv: %s", rilArgv[0]);
-	/* s_rilEnvÖĞµÄ³ÉÔ±ÊÇril.cppÊµÏÖµÄ£¬È»ºóÔÚrild.cÖĞÓÃexternÉùÃ÷µÄ
-	 * £¬È»ºó³õÊ¼»¯µÄs_rilEnv½á¹¹Ìå 
+	/* s_rilEnvä¸­çš„æˆå‘˜æ˜¯ril.cppå®ç°çš„ï¼Œç„¶ååœ¨rild.cä¸­ç”¨externå£°æ˜çš„
+	 * ï¼Œç„¶ååˆå§‹åŒ–çš„s_rilEnvç»“æ„ä½“ 
 	 */
-	/* ÕâÀïÃæµÄÈı¸öº¯ÊıÊÇÔÚril.cppÀïÃæÊµÏÖ£¬ËùÒÔÉÏÃæÓÃexternÉùÃ÷ £¬
- 	 * Õâ¸öÈ«¾Ö±äÁ¿»á´«¸øril_initº¯Êı£¬¹©ÏÂ²ãµ÷ÓÃ
+	/* è¿™é‡Œé¢çš„ä¸‰ä¸ªå‡½æ•°æ˜¯åœ¨ril.cppé‡Œé¢å®ç°ï¼Œæ‰€ä»¥ä¸Šé¢ç”¨externå£°æ˜ ï¼Œ
+ 	 * è¿™ä¸ªå…¨å±€å˜é‡ä¼šä¼ ç»™ril_initå‡½æ•°ï¼Œä¾›ä¸‹å±‚è°ƒç”¨
  	 */
     funcs = rilInit(&s_rilEnv, argc, rilArgv);
 

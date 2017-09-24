@@ -324,7 +324,7 @@ static void handle_zmsri(const char *s, const char *smsPdu);
 #define PARITYON        0
 #define PARITY            0
 
-/* Í¨µÀÃèÊö·û */
+/* é€šé“æè¿°ç¬¦ */
 struct channel_description  *descriptions;
 int *service_channel_map;
 struct psd_channel_decription   ppp_channel ={0};
@@ -368,7 +368,7 @@ struct channel_description  dcp_descriptions[] =
 
 };
 
-/* Í¨µÀÃèÊö·û */
+/* é€šé“æè¿°ç¬¦ */
 struct channel_description  scp_descriptions[] =
 {
     [CHANNEL_00] = {    "/dev/gsmtty1",     "RIL-UNSOL",    NULL },
@@ -504,7 +504,7 @@ static void handle_icc(const char *s, const char *smsPdu)
     {
         goto error;
     }
-      // sleep(5);   //å–æ¶ˆç¡5ç§’åŠŸèƒ½    gelei  20161021  
+      // sleep(5);   //é™æ ¨ç§·é«?ç»‰æ‘å§›é‘³?   gelei  20161021  
     sprintf(iccid, "%s", result);
     ALOGD(" iccid = %s",iccid);
 	property_set("ril.iccid", iccid);
@@ -526,7 +526,7 @@ static void handle_zmsri(const char *s, const char *smsPdu)
     modemReady = 1;
 }
 
-/* ÉèÖÃÍ¨µÀ */
+/* è®¾ç½®é€šé“ */
 void set_channles(Modem_Type modemType, int modem_mode)
 {
     struct channel_description  *cp_descriptions = scp_descriptions;
@@ -572,7 +572,7 @@ int get_channel_number(void)
 {
     //return (sizeof(descriptions)/sizeof(descriptions[0]));
     ALOGD("get_channel_number = %d ", channel_count);
-	/* Í¨µÀµÄÊıÁ¿£¬ÔÚset_channlesº¯ÊıÖĞÉèÖÃµÄ */
+	/* é€šé“çš„æ•°é‡ï¼Œåœ¨set_channleså‡½æ•°ä¸­è®¾ç½®çš„ */
     return channel_count;
 }
 
@@ -590,7 +590,7 @@ static const struct service_info    s_services[] =
 
 };
 
-/* ´´½¨¹¤×÷¶ÓÁĞ */
+/* åˆ›å»ºå·¥ä½œé˜Ÿåˆ— */
 static void createWorkQueues()
 {
     int i;
@@ -628,7 +628,7 @@ return descriptions[service_channel_map[service]].workQueue;
 
 void setThreadContext(ThreadContext *context)
 {
-	/* ÉèÖÃÏß³ÌË½ÓĞÊı¾İ */
+	/* è®¾ç½®çº¿ç¨‹ç§æœ‰æ•°æ® */
     pthread_setspecific(sKey, context);
 }
 ThreadContext * getThreadContext()
@@ -989,9 +989,9 @@ void setRadioState(RIL_RadioState newState)
     ALOGI("setRadioState: oldState=%d newState=%d", oldState, newState);
     if (sState != newState || s_closed > 0)
     {
-    	/* °ÑĞÂµÄ×´Ì¬¸øÕâ¸öÈ«¾Ö±äÁ¿£¬µ«ÊÇÕâ¸ö±äÁ¿ÊÇ¸ÉÊ²Ã´ÓÃµÄ? */
+    	/* æŠŠæ–°çš„çŠ¶æ€ç»™è¿™ä¸ªå…¨å±€å˜é‡ï¼Œä½†æ˜¯è¿™ä¸ªå˜é‡æ˜¯å¹²ä»€ä¹ˆç”¨çš„? */
         sState = newState;
-		/* ¹ã²¥µÄ·½Ê½»½ĞÑ¶à¸öÏß³Ì */
+		/* å¹¿æ’­çš„æ–¹å¼å”¤é†’å¤šä¸ªçº¿ç¨‹ */
         pthread_cond_broadcast(&s_state_cond);
     }
 
@@ -1001,7 +1001,7 @@ void setRadioState(RIL_RadioState newState)
     /* Do these outside of the mutex */
     if (sState != oldState)
     {
-    	/* ÉÏ±¨ÏûÏ¢ÏìÓ¦ */
+    	/* ä¸ŠæŠ¥æ¶ˆæ¯å“åº” */
         RIL_onUnsolicitedResponse(RIL_UNSOL_RESPONSE_RADIO_STATE_CHANGED, NULL, 0);
     }
 }
@@ -1440,11 +1440,11 @@ static int reset_modem(void)
 }
 
 
-/* ÃüÁî¶ÁÈ¡Ïß³Ì */
+/* å‘½ä»¤è¯»å–çº¿ç¨‹ */
 /* Called on command or reader thread */
 static void onATReaderClosed()
 {
-	/* ½ûÖ¹ËùÓĞµÄmobile½Ó¿Ú */
+	/* ç¦æ­¢æ‰€æœ‰çš„mobileæ¥å£ */
     disableAllMobileInterfaces();
 
     // readerLoop has close all channels, just need to wake up mainLoop
@@ -1454,9 +1454,9 @@ static void onATReaderClosed()
     ALOGD("ril.modemReseting is set 1 ");
     property_set("ril.modemReseting", "1");
 
-	/* ÉèÖÃ×´Ì¬ */
+	/* è®¾ç½®çŠ¶æ€ */
     setRadioState(RADIO_STATE_OFF);
-	/* sim¿¨×´Ì¬¸ü¸Ä */
+	/* simå¡çŠ¶æ€æ›´æ”¹ */
 	RIL_onUnsolicitedResponse(RIL_UNSOL_RESPONSE_SIM_STATUS_CHANGED, NULL, 0);
     property_set("ril.reset_manual", "1");//zxj add
     ALOGD("%s: reset_modem", __FUNCTION__);
@@ -2105,18 +2105,18 @@ static void * mainLoop(void *param)
 {
 /* added by RenYimin_2015-11-12 for AP and CP communication BEGIN */
     /**
-     * @pthread_setname_np: pthread_setname_np()ºÍpthread_getname_np()£¬
-     *  ¿ÉÒÔÔÚ½ø³ÌÖĞÉèÖÃºÍ¶ÁÈ¡ÆäËûÏß³ÌµÄÃû×Ö.
-     * @pthread_self: »ñµÃÏß³Ì×ÔÉíµÄID
+     * @pthread_setname_np: pthread_setname_np()å’Œpthread_getname_np()ï¼Œ
+     *  å¯ä»¥åœ¨è¿›ç¨‹ä¸­è®¾ç½®å’Œè¯»å–å…¶ä»–çº¿ç¨‹çš„åå­—.
+     * @pthread_self: è·å¾—çº¿ç¨‹è‡ªèº«çš„ID
      */
-    /* ÉèÖÃµ±Ç°Ïß³ÌµÄÃû×Ö */
+    /* è®¾ç½®å½“å‰çº¿ç¨‹çš„åå­— */
     pthread_setname_np(pthread_self(), "RIL-ZTE");
-	/* Ïß³ÌÉÏÏÂÎÄ */
+	/* çº¿ç¨‹ä¸Šä¸‹æ–‡ */
     ThreadContext   context = {"RIL-ZTE", -1, 0};
 	
     setThreadContext(&context);
     ALOGD("entering RIL-ZTE ");
-	/* ÉèÖÃ¹Ø? */
+	/* è®¾ç½®å…³? */
     at_set_on_reader_closed(onATReaderClosed);
 	
     at_set_on_timeout(onATTimeout);
@@ -2187,7 +2187,7 @@ const RIL_RadioFunctions * RIL_Init(const struct RIL_Env *env, int argc, char **
     pthread_cond_init(&s_start_cond, NULL);
     pthread_mutex_init(&s_start_mutex, NULL);
 	/* added by RenYimin_2015-11-12 for AP and CP communication END */
-	/* envÊÇÉÏ²ãrild.cÖĞ´«µİ½øÀ´µÄ²ÎÊı */
+	/* envæ˜¯ä¸Šå±‚rild.cä¸­ä¼ é€’è¿›æ¥çš„å‚æ•° */
     s_rilenv = env;
 
     /* [Jerry] the arg "-d /dev/ttyS0" defined in /<nfsroot>/system/build.prop is not used now.
@@ -2199,18 +2199,18 @@ const RIL_RadioFunctions * RIL_Init(const struct RIL_Env *env, int argc, char **
     ALOGI("Current CP version:%d,%d", modemType, modem_mode);
     ALOGI("Current ril so version is"VER_TIME);
 
-	/* ÉèÖÃÍ¨µÀÃèÊö·û */
+	/* è®¾ç½®é€šé“æè¿°ç¬¦ */
     set_channles(modemType, modem_mode);
 
-	/* Í¨µÀ½á¹¹Ìå */
+	/* é€šé“ç»“æ„ä½“ */
     init_all_channel_struct();
 	/**
-	 * ´´½¨Ïß³ÌÌØÓĞµÄÖµ
-	 * ¾ßÌå·ÃÎÊ:http://www.jianshu.com/p/d52c1ebf808a
+	 * åˆ›å»ºçº¿ç¨‹ç‰¹æœ‰çš„å€¼
+	 * å…·ä½“è®¿é—®:http://www.jianshu.com/p/d52c1ebf808a
 	 */
     pthread_key_create(&sKey, NULL);
 	/**
-	 * ´´½¨¶ÓÁĞ£¬ÓÃÉÏÃæµÄÍ¨µÀ
+	 * åˆ›å»ºé˜Ÿåˆ—ï¼Œç”¨ä¸Šé¢çš„é€šé“
 	 */
     createWorkQueues();
 

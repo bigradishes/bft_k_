@@ -72,6 +72,9 @@ EXPORT_SYMBOL(down);
  * If the sleep is interrupted by a signal, this function will return -EINTR.
  * If the semaphore is successfully acquired, this function returns 0.
  */
+/**
+ * 获取指定的信号量
+ */
 int down_interruptible(struct semaphore *sem)
 {
 	unsigned long flags;
@@ -127,6 +130,9 @@ EXPORT_SYMBOL(down_killable);
  * Unlike mutex_trylock, this function can be used from interrupt context,
  * and the semaphore can be released by any task or interrupt.
  */
+/**
+ * 尝试以阻塞的方式来获取指定的信号量
+ */
 int down_trylock(struct semaphore *sem)
 {
 	unsigned long flags;
@@ -174,6 +180,9 @@ EXPORT_SYMBOL(down_timeout);
  *
  * Release the semaphore.  Unlike mutexes, up() may be called from any
  * context and even by tasks which have never called down().
+ */
+/**
+ * 释放信号量
  */
 void up(struct semaphore *sem)
 {

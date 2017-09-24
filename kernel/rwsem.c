@@ -94,6 +94,9 @@ EXPORT_SYMBOL(up_write);
 /*
  * downgrade write lock to read lock
  */
+/**
+ * 可以动态的将写锁转换为读锁
+ */
 void downgrade_write(struct rw_semaphore *sem)
 {
 	/*
