@@ -1877,6 +1877,7 @@ int rollZteRildStartFlag()
 *   0: right Response waiting for
 *   1: not right Response
 ****************************************************/
+/* 判断at响应 */
 static int judge_at_response(fd_set readfds, char *ttydev)
 {
     int ret = -1;
@@ -1886,6 +1887,7 @@ static int judge_at_response(fd_set readfds, char *ttydev)
     {
         return -1;
     }
+	/* 判断描述符fd是否在给定的描述符集fdset中 */
     if(FD_ISSET(ttydev_fd, &readfds)) 
     {
         ret = read(ttydev_fd, readbuf, sizeof(readbuf));
@@ -1951,6 +1953,7 @@ static int send_cmd_at(char *ttydev)
         } 
         else 
         {
+        	/* 判断at响应 */
             ret = judge_at_response(readfds, ttydev);
             if(ret == 0)
             {
@@ -2015,8 +2018,15 @@ static int set_tcsanow_attr(int fd, int baudrate, struct termios oldtio)
     //newtio.c_lflag = 0;
     newtio.c_cc[VMIN] = 1;
     newtio.c_cc[VTIME] =0;
-	
+
+	/**
+	 * 清空终端未完成的输入/输出请求及数据
+	 * TCIFLUSH   清除正收到的数据，且不会读取出来
+	 * TCOFLUSH   清除正写入的数据，且不会发送至终端
+	 * TCIOFLUSH  清除所有正在发生的I/O数据
+	 */
     tcflush(fd, TCIFLUSH);
+	/* 设置终端的相关参数 */
     ret = tcsetattr(fd, TCSANOW, &newtio);
     return ret;
 }
@@ -2045,13 +2055,14 @@ static void open_ttydev(void)
 		ALOGD("Open %s, ttydev_fd: %d success", TTY_DEV_NAME, ttydev_fd);
 
 		//setting boudrate
+		/* 获取与终端相关的参数 */
 		ret = tcgetattr(ttydev_fd, &oldtio);
 		if(ret < 0) 
 		{
 			ALOGE("%s,%s,%d,error:%s",__FILE__,__FUNCTION__,__LINE__,strerror(errno));
 			return -1;
 		}
-		
+		/* 设置终端的相关参数 */
 		ret = set_tcsanow_attr(ttydev_fd, baudrate, oldtio);
 		if (ret < 0) 
 		{
@@ -2059,9 +2070,11 @@ static void open_ttydev(void)
 			return -1;
 		}
 		
+		/* 获取与终端相关的参数 */
 		tcgetattr(ttydev_fd, &ios);
 		ios.c_iflag = IGNPAR;
 		ios.c_lflag = 0;  /* disable ECHO, ICANON, etc... */
+		/* 设置终端的相关参数 */
 		tcsetattr(ttydev_fd, TCSANOW, &ios);
 
 	}
@@ -2080,11 +2093,11 @@ static int send_at_command(void)
 	{
 		ret = send_cmd_at(TTY_DEV_NAME);
 		if (0 > ret)
-	    	{
-	       	ALOGD("send_cmd_at error");
-	        	sleep(1);	
-	        	continue;
-	    	}
+    	{
+       	ALOGD("send_cmd_at error");
+        	sleep(1);	
+        	continue;
+    	}
 		else 
 		{
 			break;
@@ -2128,6 +2141,7 @@ static void * mainLoop(void *param)
     {
         //open ttyUSB0,set baudrate
         open_ttydev();
+		/* 测试发送"at"命令 */
         if(-1 == send_at_command())
         {
             return NULL;
