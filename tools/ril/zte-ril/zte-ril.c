@@ -2146,6 +2146,7 @@ static void * mainLoop(void *param)
         {
             return NULL;
         }
+		/* 打开通道 */
         at_channel_open(CHANNEL_00, ttydev_fd);
         
         ALOGD("pthread_cond_signal unfinish ");
@@ -2159,9 +2160,12 @@ static void * mainLoop(void *param)
             return 0;
         }
         //sleep(5);
+        /* 初始化回调 */
         enque_initializeCallback();
+		/* 设置Radio状态 */
         setRadioState(RADIO_STATE_OFF);
         //ret = rollZteRildStartFlag();
+        /* 等待关闭 */
         waitForClose();
         return 0;
     
@@ -2566,6 +2570,10 @@ static void onRequest(int request, void *data, size_t datalen, RIL_Token token)
  * This is called on atchannel's reader thread. AT commands may
  * not be issued here
  */
+/**
+ * 主动上报
+ * 参数怎么传入的？
+ */
 static void onUnsolicited(const char *s, const char *smsPdu)
 {
     const struct indication_info    *pi = NULL;
@@ -2576,6 +2584,7 @@ static void onUnsolicited(const char *s, const char *smsPdu)
      * This is OK because the RIL library will poll for initial state
      */
 
+	/* 得到消息头 */
     pi = getIndicationHandler(s);
     if (pi && pi->handler)
     {

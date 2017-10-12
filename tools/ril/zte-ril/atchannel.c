@@ -936,6 +936,7 @@ static int writeCtrlZ(struct channel_struct *chan, const char *s)
 /**
  * returns 0 on success, -1 on error
  */
+/* 通道初始化 */
 int at_channel_init(ATUnsolHandler h1)
 {
     int ret;

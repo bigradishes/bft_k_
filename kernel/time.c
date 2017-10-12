@@ -575,6 +575,9 @@ EXPORT_SYMBOL(jiffies_to_timeval);
 /*
  * Convert jiffies/jiffies_64 to clock_t and back.
  */
+/* 内核空间的hz，要么比用户空间大，要么比用户空间小，只需要把内核计算出来的时间
+ * 然后乘以或除以用户空间的hz，得到的数，就是用户空间的hz应该扩大或者缩小多少倍
+ */
 clock_t jiffies_to_clock_t(long x)
 {
 #if (TICK_NSEC % (NSEC_PER_SEC / USER_HZ)) == 0

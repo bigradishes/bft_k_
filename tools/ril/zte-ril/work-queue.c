@@ -33,7 +33,7 @@ struct WorkDispachInfo
     struct WorkQueue    *q;
 };
 
-/* ÐÂµÄ¹¤×÷Èë¿Ú */
+/* æ–°çš„å·¥ä½œå…¥å£ */
 static struct WorkEntry * newWorkEntry(work_function_t function, void *arg)
 {
     struct WorkEntry    *entry = malloc(sizeof(struct WorkEntry));
@@ -61,8 +61,8 @@ static void * WorkQueueRunner(void *arg)
 {
     struct WorkQueue    *q = (struct WorkQueue  *) arg;
 	/**
-	 * pthread_setname_np()ºÍpthread_getname_np()£¬
-	 * ¿ÉÒÔÔÚ½ø³ÌÖÐÉèÖÃºÍ¶ÁÈ¡ÆäËûÏß³ÌµÄÃû×Ö
+	 * pthread_setname_np()å’Œpthread_getname_np()ï¼Œ
+	 * å¯ä»¥åœ¨è¿›ç¨‹ä¸­è®¾ç½®å’Œè¯»å–å…¶ä»–çº¿ç¨‹çš„åå­—
 	 */
     pthread_setname_np(pthread_self(), q->context.threadname);
     setThreadContext(&q->context);
@@ -75,11 +75,11 @@ static void * WorkQueueRunner(void *arg)
     return NULL;
 }
 
-/* °ÑÐÂµÄº¯ÊýÌí¼Óµ½¹¤×÷¶ÓÁÐÖÐ */
+/* æŠŠæ–°çš„å‡½æ•°æ·»åŠ åˆ°å·¥ä½œé˜Ÿåˆ—ä¸­ */
 void enque(struct WorkQueue *q, work_function_t function, void *arg)
 {
     struct WorkEntry    *entry = newWorkEntry(function, arg);
-    pthread_mutex_lock(&q->mutex); /* »¥³â */
+    pthread_mutex_lock(&q->mutex); /* äº’æ–¥ */
     struct WorkEntry    **p = &q->head;
     while (*p)
     {
@@ -120,7 +120,7 @@ struct WorkQueue * createWorkQueue(const char *name, int channel, long long time
     pthread_mutex_init(&q->mutex, NULL);
     pthread_cond_init(&q->cond, NULL);
 
-	/* ¿½±´×Ö·û´®£¬±Èstrcpy¸ü°²È« */
+	/* æ‹·è´å­—ç¬¦ä¸²ï¼Œæ¯”strcpyæ›´å®‰å…¨ */
     strlcpy(q->context.threadname, name, sizeof(q->context.threadname));
     q->context.write_channel = channel;
     q->context.channel_timeout_msec = timeout_msec;

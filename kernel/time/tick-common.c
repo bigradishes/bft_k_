@@ -59,6 +59,7 @@ int tick_is_oneshot_available(void)
 
 /*
  * Periodic tick
+ * 周期性的记录
  */
 static void tick_periodic(int cpu)
 {
@@ -66,6 +67,7 @@ static void tick_periodic(int cpu)
 		write_seqlock(&xtime_lock);
 
 		/* Keep track of the next tick event */
+		/* 记录下一个节拍事件 */
 		tick_next_period = ktime_add(tick_next_period, tick_period);
 
 		do_timer(1);
